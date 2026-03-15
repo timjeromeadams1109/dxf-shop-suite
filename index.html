@@ -578,6 +578,36 @@ h1,h2,h3,h4,h5,h6{font-family:'Oswald',sans-serif}
 .qa-trigger:hover{background:var(--orange);border-color:var(--orange);color:#fff;transform:scale(1.1)}
 .qa-trigger.has-fails{background:var(--danger);border-color:var(--danger);color:#fff;animation:pulse 2s ease infinite}
 
+/* WELCOME MODAL */
+.welcome-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:6000;display:none;align-items:center;justify-content:center;padding:24px}
+.welcome-overlay.open{display:flex}
+.welcome-box{background:#fff;border-radius:12px;max-width:560px;width:100%;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.welcome-box h2{font-family:'Oswald',sans-serif;font-size:32px;color:var(--charcoal);margin-bottom:8px}
+.welcome-box .wb-sub{font-size:16px;color:var(--steel);margin-bottom:24px}
+.welcome-box .wb-what{background:var(--cream);border-radius:8px;padding:20px;text-align:left;margin-bottom:24px}
+.welcome-box .wb-what h3{font-family:'Oswald',sans-serif;font-size:16px;color:var(--orange);margin-bottom:8px}
+.welcome-box .wb-what p{font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:8px}
+.welcome-box .wb-steps{text-align:left;margin-bottom:24px}
+.welcome-box .wb-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.welcome-box .wb-num{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.welcome-box .wb-step-text{font-size:14px;color:var(--charcoal);line-height:1.5}
+.welcome-box .wb-step-text strong{color:var(--orange)}
+.wb-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* TOOLTIPS */
+.has-tip{position:relative;border-bottom:1px dotted var(--orange);cursor:help}
+.has-tip:hover::after,.has-tip:focus::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--charcoal);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;padding:8px 12px;border-radius:6px;white-space:normal;width:max-content;max-width:240px;z-index:9000;line-height:1.4;text-transform:none;letter-spacing:normal;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.has-tip:hover::before,.has-tip:focus::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--charcoal);z-index:9001}
+
+/* SAMPLE BUTTON */
+.btn-sample{background:transparent;border:2px dashed var(--orange);color:var(--orange);padding:10px 20px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;transition:all .2s;width:100%;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em}
+.btn-sample:hover{background:rgba(255,83,6,.06);border-style:solid}
+
+/* HELPER TEXT */
+.tab-helper{background:linear-gradient(135deg,rgba(255,83,6,.05),rgba(255,212,45,.05));border:1px solid rgba(255,83,6,.15);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--charcoal);line-height:1.5;display:flex;align-items:flex-start;gap:10px}
+.tab-helper .th-icon{font-size:20px;flex-shrink:0}
+.tab-helper strong{color:var(--orange)}
+
 /* PRINT */
 @media print{
 .nav,.marquee,.bottom-cta,.footer,.toast-container,.modal-overlay,.confirm-overlay,.page-loader,.cad-layout,.upload-zone,.btn,.tab-bar,.nav-mobile-menu{display:none!important}
@@ -607,7 +637,7 @@ body{background:#fff}
 <div class="conn-status" id="conn-status" title="API connection status" role="status" aria-live="polite"><span class="conn-dot offline" id="conn-dot" aria-hidden="true"></span><span id="conn-label">Checking...</span></div>
 <a href="#feature-tabs" class="nav-link" data-tab-link="machines">Machine Profiles</a>
 <a href="#" class="nav-link" id="btn-api-docs">API Docs</a>
-<a href="#feature-tabs" class="btn btn-primary">Open Suite</a>
+<a href="#feature-tabs" class="btn btn-primary">Get Started</a>
 <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
 </div>
 </div>
@@ -627,12 +657,12 @@ body{background:#fff}
 <!-- HERO -->
 <section class="hero">
 <div class="hero-content">
-<div class="hero-eyebrow">FABRICATION SHOP AUTOMATION</div>
-<h1>Automate Your DXF-to-Machine<br>Workflow</h1>
-<p class="hero-sub">Validate, clean, nest, and manage DXF programs for all 12 shop machines — punch, plasma, laser, brake, and shear — every step automated, every file CAM-ready.</p>
+<div class="hero-eyebrow">SHOP AUTOMATION MADE SIMPLE</div>
+<h1>Check, Fix &amp; Organize<br>Your CNC Files</h1>
+<p class="hero-sub">Upload a drawing file, and we'll make sure it's ready for the machine — no guesswork, no errors, no wasted metal. Works with all 12 shop machines.</p>
 <div class="hero-buttons">
-<a href="#feature-tabs" class="btn btn-primary btn-hero">Open Suite</a>
-<a href="#feature-tabs" class="btn btn-hero-secondary btn-hero" data-tab-link="machines">View Machine Profiles</a>
+<a href="#feature-tabs" class="btn btn-primary btn-hero">Get Started</a>
+<button class="btn btn-hero-secondary btn-hero" onclick="closeTour();generateSampleDXF('validate')">Try a Sample File</button>
 </div>
 <div class="hero-mockups">
 <div class="mock-card">
@@ -681,9 +711,9 @@ body{background:#fff}
 <!-- FEATURE TABS -->
 <section class="features" id="feature-tabs">
 <div class="section-header">
-<div class="section-eyebrow">THE COMMAND CENTER</div>
-<h2 class="section-headline">All Your Shop Tools in One Place</h2>
-<p class="section-sub">From raw Picnic DXF to machine-ready program — every step automated.</p>
+<div class="section-eyebrow">YOUR TOOLBOX</div>
+<h2 class="section-headline">Everything You Need, One Place</h2>
+<p class="section-sub">Check files, fix problems, plan your cuts, and keep everything organized. Pick a tab to get started.</p>
 </div>
 <div class="tab-bar" role="tablist" aria-label="Shop tools">
 <button class="tab-btn active" data-tab="validate" role="tab" aria-selected="true" aria-controls="panel-validate">Validate</button>
@@ -697,10 +727,12 @@ body{background:#fff}
 
 <!-- VALIDATE TAB -->
 <div class="tab-panel active" id="panel-validate" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">📋</span><span><strong>Check your file for problems.</strong> Upload a drawing file and we'll scan it for issues that could cause bad cuts or errors on the machine. Don't have a file? Try a sample below.</span></div>
 <div class="two-col">
 <div>
+<button class="btn-sample" onclick="generateSampleDXF('validate')">Try a Sample File</button>
 <div class="form-group">
-<label>Target Machine</label>
+<label><span class="has-tip" data-tip="The machine this part will be cut/punched/bent on. Selecting one adds machine-specific checks.">Target Machine</span></label>
 <select id="val-machine">
 <option value="">Any Machine</option>
 <optgroup label="Punch">
@@ -729,45 +761,47 @@ body{background:#fff}
 </div>
 <div class="upload-zone" id="uz-validate">
 <div class="uz-icon">📐</div>
-<div class="uz-title">Drop DXF File Here</div>
-<div class="uz-sub">click to browse · .dxf only</div>
+<div class="uz-title">Drop Your Drawing File Here</div>
+<div class="uz-sub">click to browse · <span class="has-tip" data-tip="DXF is a standard drawing file format used by CNC machines. You can export DXF files from most CAD programs like AutoCAD, SolidWorks, or Fusion 360.">.dxf files</span></div>
 <div class="uz-file"></div>
 <input type="file" accept=".dxf" hidden>
 </div>
 <button class="btn btn-primary btn-full" id="btn-validate" disabled><span class="spinner"></span>Run Validation</button>
 </div>
 <div id="results-validate">
-<div class="empty-state"><div class="es-icon">📋</div><div class="es-text">Upload a DXF file to see results</div></div>
+<div class="empty-state"><div class="es-icon">📋</div><div class="es-text">Upload a drawing file or try a sample to see your results here</div></div>
 </div>
 </div>
 </div>
 
 <!-- CLEAN TAB -->
 <div class="tab-panel" id="panel-clean" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">🔧</span><span><strong>Auto-fix your file with one click.</strong> This tool repairs common problems that would cause errors on the machine — like unclosed shapes, duplicate lines, and wrong file versions.</span></div>
 <div class="two-col">
 <div>
-<p style="font-size:14px;color:var(--steel);line-height:1.6;margin-bottom:16px">Automatically fixes common issues: explodes blocks, removes duplicate geometry, closes open contours, downgrades DXF version to AC1015, and purges empty layers.</p>
+<button class="btn-sample" onclick="generateSampleDXF('clean')">Try a Sample File</button>
 <div class="upload-zone" id="uz-clean">
 <div class="uz-icon">🔧</div>
-<div class="uz-title">Drop DXF File Here</div>
-<div class="uz-sub">click to browse · .dxf only</div>
+<div class="uz-title">Drop Your Drawing File Here</div>
+<div class="uz-sub">click to browse · .dxf files</div>
 <div class="uz-file"></div>
 <input type="file" accept=".dxf" hidden>
 </div>
 <button class="btn btn-primary btn-full" id="btn-clean" disabled><span class="spinner"></span>Clean &amp; Fix</button>
 </div>
 <div id="results-clean">
-<div class="empty-state"><div class="es-icon">🔧</div><div class="es-text">Upload a DXF to auto-clean it</div></div>
+<div class="empty-state"><div class="es-icon">🔧</div><div class="es-text">Upload a file or try a sample — cleaned results will appear here</div></div>
 </div>
 </div>
 </div>
 
 <!-- NEST TAB -->
 <div class="tab-panel" id="panel-nest" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">◫</span><span><strong>Plan how parts fit on a sheet of metal.</strong> Upload one or more part files and we'll estimate how many sheets you need and how much material you'll use. Less waste = more savings.</span></div>
 <div class="two-col">
 <div>
 <div class="form-group">
-<label>Sheet Size</label>
+<label><span class="has-tip" data-tip="The size of the raw metal sheet your parts will be cut from. Standard sizes are 4ft x 8ft (48x96 inches).">Sheet Size</span></label>
 <select id="nest-sheet">
 <option value='48"x96"'>48" × 96"</option>
 <option value='60"x120"'>60" × 120"</option>
@@ -781,21 +815,22 @@ body{background:#fff}
 </div>
 <div class="upload-zone" id="uz-nest">
 <div class="uz-icon">◫</div>
-<div class="uz-title">Drop DXF Parts Here</div>
-<div class="uz-sub">multiple files accepted</div>
+<div class="uz-title">Drop Your Part Files Here</div>
+<div class="uz-sub">you can add multiple files at once</div>
 <div class="uz-file"></div>
 <input type="file" accept=".dxf" multiple hidden>
 </div>
 <button class="btn btn-primary btn-full" id="btn-nest" disabled><span class="spinner"></span>Analyze Nesting</button>
 </div>
 <div id="results-nest">
-<div class="empty-state"><div class="es-icon">◫</div><div class="es-text">Upload parts to analyze nesting efficiency</div></div>
+<div class="empty-state"><div class="es-icon">◫</div><div class="es-text">Upload your part files to see how they fit on a sheet</div></div>
 </div>
 </div>
 </div>
 
 <!-- LIBRARY TAB -->
 <div class="tab-panel" id="panel-library" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">📂</span><span><strong>Save and organize your parts.</strong> Add parts to your library so you can find them later. Tag each part with what machine it runs on, what material it's made from, and how thick.</span></div>
 <div class="two-col">
 <div>
 <div class="form-group"><label>Part Name</label><input type="text" id="lib-name" placeholder="e.g. BRACKET-A-001"></div>
@@ -811,8 +846,8 @@ body{background:#fff}
 <div class="form-group"><label>Notes</label><input type="text" id="lib-notes" placeholder="Optional notes"></div>
 <div class="upload-zone" id="uz-library">
 <div class="uz-icon">📐</div>
-<div class="uz-title">Drop DXF File Here</div>
-<div class="uz-sub">click to browse · .dxf only</div>
+<div class="uz-title">Drop Your Drawing File Here</div>
+<div class="uz-sub">click to browse · .dxf files</div>
 <div class="uz-file"></div>
 <input type="file" accept=".dxf" hidden>
 </div>
@@ -833,6 +868,7 @@ body{background:#fff}
 
 <!-- CREATE DXF TAB -->
 <div class="tab-panel" id="panel-create" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">✏️</span><span><strong>Draw a part from scratch.</strong> Use the tools below to draw shapes, or start from a template like a base plate or bracket. When you're done, export it as a machine-ready file.</span></div>
 <div class="cad-layout">
 <!-- Toolbar -->
 <div class="cad-toolbar">
@@ -946,6 +982,7 @@ body{background:#fff}
 
 <!-- MACHINES TAB -->
 <div class="tab-panel" id="panel-machines" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">🏭</span><span><strong>Your shop's machines.</strong> Each machine has its own checklist of things to verify before sending a file to it. Click a machine to see its requirements and add your own notes.</span></div>
 <div class="two-col" id="machines">
 <div id="machine-cards"></div>
 <div id="machine-detail">
@@ -960,35 +997,35 @@ body{background:#fff}
 <!-- TRUST CARDS -->
 <section class="trust">
 <div class="section-header">
-<h2 class="section-headline">Built for How Your Shop Actually Works</h2>
-<p class="section-sub">Every feature targets a real bottleneck in the DXF-to-machine pipeline.</p>
+<h2 class="section-headline">Why This Tool Exists</h2>
+<p class="section-sub">Sending a bad file to a machine wastes metal, time, and money. This catches problems before they happen.</p>
 </div>
 <div class="trust-grid">
 <div class="trust-card">
 <div class="trust-icon">✓</div>
-<h4>Catches Open Contours</h4>
-<p>Flags unclosed geometry before it causes plasma miscuts or missed punch hits — the most common import error from Picnic.</p>
+<h4>Catches Mistakes</h4>
+<p>Finds unclosed shapes, wrong file versions, and other problems that would cause the machine to cut incorrectly or stop mid-job.</p>
 </div>
 <div class="trust-card">
 <div class="trust-icon">⚙</div>
-<h4>One-Click Cleanup</h4>
-<p>Explodes block references, removes duplicate geometry, closes near-closed polylines, and downgrades DXF version to AC1015 automatically.</p>
+<h4>Fixes Them Automatically</h4>
+<p>One click and the most common problems are fixed — duplicate lines removed, shapes closed, file version corrected. No manual editing needed.</p>
 </div>
 <div class="trust-card">
 <div class="trust-icon">◫</div>
-<h4>Smart Nesting Estimates</h4>
-<p>Estimates true-shape sheet utilization and flags low-efficiency layouts before you waste a sheet or send a bad nest to the machine.</p>
+<h4>Saves Material</h4>
+<p>Shows you how parts fit on a sheet of metal so you can use as much of the sheet as possible and waste less material.</p>
 </div>
 </div>
 </section>
 
 <!-- BOTTOM CTA -->
 <section class="bottom-cta">
-<h2>Ready to Cut Programming Time in Half?</h2>
-<p class="bc-sub">Connect the Flask backend and start processing your first DXF in under 5 minutes.</p>
+<h2>Ready to Get Started?</h2>
+<p class="bc-sub">Upload your first file or try a sample — you'll see results in seconds.</p>
 <div class="hero-buttons">
-<a href="#feature-tabs" class="btn btn-primary btn-hero">Open Suite</a>
-<a href="#" class="btn btn-hero-secondary btn-hero" id="btn-cta-docs">View Docs</a>
+<a href="#feature-tabs" class="btn btn-primary btn-hero">Open the Suite</a>
+<button class="btn btn-hero-secondary btn-hero" onclick="generateSampleDXF('validate')">Try a Sample File</button>
 </div>
 <div class="code-pill">Serverless API — deployed on Vercel</div>
 </section>
@@ -1000,7 +1037,7 @@ body{background:#fff}
 <div class="nav-logo">DXF</div>
 <div class="fb-name">DXF Shop Automation Suite</div>
 <div class="fb-sub">Built for AMADA · Vortman · Lincoln · Cincinnati · ACUSHEAR</div>
-<div class="fb-powered">Powered by Python + Flask + ezdxf</div>
+<div class="fb-powered">Powered by Python + ezdxf</div>
 </div>
 <div class="footer-col">
 <h5>Tools</h5>
@@ -1085,8 +1122,65 @@ body{background:#fff}
 </div>
 <button class="qa-trigger" id="qa-trigger" title="QA Tests (Ctrl+Shift+Q)">QA</button>
 
+<!-- WELCOME GUIDE -->
+<div class="welcome-overlay" id="welcome-overlay">
+<div class="welcome-box">
+<h2>Welcome to the Shop Suite!</h2>
+<p class="wb-sub">Your all-in-one tool for preparing design files for CNC cutting machines.</p>
+
+<div class="wb-what">
+<h3>What is a DXF file?</h3>
+<p>A <strong>DXF file</strong> is a drawing file — like a blueprint that tells a cutting machine exactly where to cut, punch, or bend a piece of metal. Think of it like a recipe that the machine follows.</p>
+<p>This app helps you <strong>check, fix, and organize</strong> those files before sending them to the machine.</p>
+</div>
+
+<div class="wb-steps">
+<div class="wb-step"><div class="wb-num">1</div><div class="wb-step-text"><strong>Check</strong> your file for problems (the Validate tab)</div></div>
+<div class="wb-step"><div class="wb-num">2</div><div class="wb-step-text"><strong>Fix</strong> any issues automatically (the Clean tab)</div></div>
+<div class="wb-step"><div class="wb-num">3</div><div class="wb-step-text"><strong>Plan</strong> how parts fit on a sheet of metal (the Nest tab)</div></div>
+<div class="wb-step"><div class="wb-num">4</div><div class="wb-step-text"><strong>Save</strong> parts for later reuse (the Library tab)</div></div>
+</div>
+
+<div class="wb-actions">
+<button class="btn btn-primary btn-hero" id="welcome-try" onclick="closeTour();generateSampleDXF('validate')">Try a Sample File</button>
+<button class="btn btn-secondary" id="welcome-close" onclick="closeTour()">I Know What I'm Doing</button>
+</div>
+</div>
+</div>
+
 <script>
 const API='/api';
+
+// ─── WELCOME TOUR ───
+(function(){
+try{
+if(!localStorage.getItem('dxf_welcomed')){
+document.getElementById('welcome-overlay').classList.add('open');
+}
+}catch(e){}
+})();
+function closeTour(){
+document.getElementById('welcome-overlay').classList.remove('open');
+try{localStorage.setItem('dxf_welcomed','1');}catch(e){}
+}
+
+// ─── SAMPLE DXF GENERATOR ───
+function generateSampleDXF(target){
+// Create a simple bracket DXF (AC1015) with a rectangle and 4 bolt holes
+const dxf=`0\nSECTION\n2\nHEADER\n9\n$ACADVER\n1\nAC1015\n9\n$INSUNITS\n70\n1\n0\nENDSEC\n0\nSECTION\n2\nTABLES\n0\nTABLE\n2\nLTYPE\n70\n1\n0\nLTYPE\n2\nCONTINUOUS\n70\n0\n3\nSolid line\n72\n65\n73\n0\n40\n0.0\n0\nENDTAB\n0\nTABLE\n2\nLAYER\n70\n1\n0\nLAYER\n2\n0\n70\n0\n62\n7\n6\nCONTINUOUS\n0\nENDTAB\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n0\nLWPOLYLINE\n8\n0\n90\n4\n70\n1\n10\n0\n20\n0\n10\n8\n20\n0\n10\n8\n20\n6\n10\n0\n20\n6\n0\nCIRCLE\n8\n0\n10\n1\n20\n1\n30\n0\n40\n0.375\n0\nCIRCLE\n8\n0\n10\n7\n20\n1\n30\n0\n40\n0.375\n0\nCIRCLE\n8\n0\n10\n1\n20\n5\n30\n0\n40\n0.375\n0\nCIRCLE\n8\n0\n10\n7\n20\n5\n30\n0\n40\n0.375\n0\nENDSEC\n0\nEOF\n`;
+const blob=new Blob([dxf],{type:'application/dxf'});
+const file=new File([blob],'sample-bracket.dxf',{type:'application/dxf'});
+// Inject file into the correct upload input
+let inputEl;
+if(target==='validate'){switchTab('validate');inputEl=valInput;}
+else if(target==='clean'){switchTab('clean');inputEl=cleanInput;}
+else return;
+const dt=new DataTransfer();
+dt.items.add(file);
+inputEl.files=dt.files;
+inputEl.dispatchEvent(new Event('change'));
+toast('Sample bracket file loaded — click the button to process it!','info',5000);
+}
 
 // ─── DOWNLOAD CLEANED DXF ───
 function downloadCleaned(){
