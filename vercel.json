@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/library/add", "destination": "/api/library" },
+    { "source": "/api/library/:id", "destination": "/api/library" }
+  ]
+}

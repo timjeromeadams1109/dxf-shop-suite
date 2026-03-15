@@ -990,7 +990,7 @@ body{background:#fff}
 <a href="#feature-tabs" class="btn btn-primary btn-hero">Open Suite</a>
 <a href="#" class="btn btn-hero-secondary btn-hero" id="btn-cta-docs">View Docs</a>
 </div>
-<div class="code-pill">$ python server.py &nbsp; → &nbsp; Running on http://localhost:5050</div>
+<div class="code-pill">Serverless API — deployed on Vercel</div>
 </section>
 
 <!-- FOOTER -->
@@ -1037,7 +1037,7 @@ body{background:#fff}
 <div class="modal">
 <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
 <h2>API Reference</h2>
-<p style="color:var(--steel);margin-bottom:24px">All endpoints require the Flask backend running on <code style="font-family:'JetBrains Mono',monospace;background:var(--cream);padding:2px 6px;border-radius:3px">http://localhost:5050</code></p>
+<p style="color:var(--steel);margin-bottom:24px">All endpoints are served via serverless functions at <code style="font-family:'JetBrains Mono',monospace;background:var(--cream);padding:2px 6px;border-radius:3px">/api</code></p>
 
 <h3>Validation</h3>
 <div class="endpoint"><span class="ep-method post">POST</span><span class="ep-path">/api/validate</span><div class="ep-desc">Validate a DXF file against machine-specific rules</div><div class="ep-params">FormData: file (.dxf), machine? (machine key)</div></div>
@@ -1059,7 +1059,7 @@ body{background:#fff}
 
 <h3>Server Setup</h3>
 <div style="background:var(--charcoal);border-radius:6px;padding:16px;margin-top:12px">
-<code style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--yellow)">$ pip install flask ezdxf flask-cors<br>$ python server.py<br><span style="color:var(--success)">→ Running on http://localhost:5050</span></code>
+<code style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--yellow)">API is deployed as Vercel serverless functions<br><span style="color:var(--success)">→ All endpoints available at /api/*</span></code>
 </div>
 </div>
 </div>
@@ -1086,7 +1086,21 @@ body{background:#fff}
 <button class="qa-trigger" id="qa-trigger" title="QA Tests (Ctrl+Shift+Q)">QA</button>
 
 <script>
-const API='http://localhost:5050/api';
+const API='/api';
+
+// ─── DOWNLOAD CLEANED DXF ───
+function downloadCleaned(){
+if(!window._cleanedB64)return;
+const b=atob(window._cleanedB64);
+const arr=new Uint8Array(b.length);
+for(let i=0;i<b.length;i++)arr[i]=b.charCodeAt(i);
+const blob=new Blob([arr],{type:'application/dxf'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download=window._cleanedName||'cleaned.dxf';
+a.click();
+URL.revokeObjectURL(a.href);
+}
 
 // ─── XSS SANITIZER ───
 function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
@@ -1287,8 +1301,8 @@ const nestInput=setupUpload('uz-nest','btn-nest');
 const libInput=setupUpload('uz-library','btn-library');
 
 function showError(container,err){
-container.innerHTML=`<div class="error-card"><div class="ec-title">⚠ Cannot connect to backend</div><div class="ec-msg">Make sure the Python server is running: <strong>python server.py</strong></div><div class="ec-detail">${esc(err.message||String(err))}</div></div>`;
-toast('API request failed — is the server running?','error');
+container.innerHTML=`<div class="error-card"><div class="ec-title">⚠ API Error</div><div class="ec-msg">The server encountered an error processing your request.</div><div class="ec-detail">${esc(err.message||String(err))}</div></div>`;
+toast('API request failed','error');
 }
 
 // ─── VALIDATE ───
@@ -1371,8 +1385,10 @@ d.fixes_applied.forEach(f=>{
 html+=`<div class="fix-row"><span class="fix-check">✓</span><span>${esc(f)}</span></div>`;
 });
 }
-if(d.download_path){
-html+=`<a href="${API.replace('/api','')}${d.download_path}" class="btn btn-primary btn-full" style="margin-top:16px;text-decoration:none" download>⬇ Download Cleaned DXF</a>`;
+if(d.cleaned_file_b64){
+window._cleanedB64=d.cleaned_file_b64;
+window._cleanedName=d.filename||'cleaned.dxf';
+html+=`<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="downloadCleaned()">⬇ Download Cleaned DXF</button>`;
 }
 res.innerHTML=html;
 toast(`Cleanup complete — ${(d.fixes_applied||[]).length} fixes applied`,'success');
@@ -2580,7 +2596,7 @@ group('Responsive & Accessibility',[
 ]);
 
 group('API Integration',[
-{name:'API base URL set',fn(){assert(API==='http://localhost:5050/api','API URL wrong: '+API)}},
+{name:'API base URL set',fn(){assert(API==='/api','API URL wrong: '+API)}},
 {name:'Connection checker ran',fn(){assertExists('#conn-dot')}},
 {name:'API status shows online or offline',fn(){const label=document.getElementById('conn-label').textContent;assert(label==='API Online'||label==='API Offline','Unexpected: '+label)}},
 {name:'Error handler produces inline card',fn(){
