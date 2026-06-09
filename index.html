@@ -1386,7 +1386,7 @@ document.getElementById('feature-tabs').scrollIntoView({behavior:'smooth',block:
 function openDocs(){document.getElementById('api-docs-modal').classList.add('open');document.body.style.overflow='hidden';}
 function closeDocs(){document.getElementById('api-docs-modal').classList.remove('open');document.body.style.overflow='';}
 document.getElementById('btn-api-docs').addEventListener('click',e=>{e.preventDefault();openDocs();});
-document.getElementById('btn-cta-docs').addEventListener('click',e=>{e.preventDefault();openDocs();});
+document.getElementById('btn-cta-docs')?.addEventListener('click',e=>{e.preventDefault();openDocs();});
 document.querySelectorAll('.footer-api-docs').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();openDocs();});});
 document.getElementById('modal-close').addEventListener('click',closeDocs);
 document.getElementById('api-docs-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDocs();});
