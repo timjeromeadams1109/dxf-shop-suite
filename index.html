@@ -1403,7 +1403,7 @@ if(tabs[idx]){switchTab(tabs[idx]);document.getElementById('feature-tabs').scrol
 });
 
 // ─── UPLOAD ZONES ───
-function setupUpload(zoneId,btnId){
+function setupUpload(zoneId,btnId,acceptedExts){
 const zone=document.getElementById(zoneId);
 const input=zone.querySelector('input[type=file]');
 const fileLabel=zone.querySelector('.uz-file');
@@ -1413,8 +1413,14 @@ zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag
 zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
 zone.addEventListener('drop',e=>{
 e.preventDefault();zone.classList.remove('dragover');
-const files=Array.from(e.dataTransfer.files).filter(f=>f.name.toLowerCase().endsWith('.dxf'));
+let files=Array.from(e.dataTransfer.files);
+if(acceptedExts){
+files=files.filter(f=>acceptedExts.some(ext=>f.name.toLowerCase().endsWith(ext)));
+if(!files.length){toast('Unsupported file type','error');return;}
+} else {
+files=files.filter(f=>f.name.toLowerCase().endsWith('.dxf'));
 if(!files.length){toast('Only .dxf files are accepted','error');return;}
+}
 const dt=new DataTransfer();
 files.forEach(f=>dt.items.add(f));
 input.files=dt.files;
@@ -1433,6 +1439,8 @@ const valInput=setupUpload('uz-validate','btn-validate');
 const cleanInput=setupUpload('uz-clean','btn-clean');
 const nestInput=setupUpload('uz-nest','btn-nest');
 const libInput=setupUpload('uz-library','btn-library');
+const convertExts=['.svg','.png','.jpg','.jpeg','.bmp','.txt','.csv','.xlsx','.xls','.docx','.doc','.dwg','.step','.stp','.f3d','.fd3','.sldprt','.sldasm','.pdf','.dxf'];
+const convertInput=setupUpload('uz-convert','btn-convert',convertExts);
 
 function showError(container,err){
 container.innerHTML=`<div class="error-card"><div class="ec-title">⚠ API Error</div><div class="ec-msg">The server encountered an error processing your request.</div><div class="ec-detail">${esc(err.message||String(err))}</div></div>`;
@@ -2858,7 +2866,7 @@ return{run,open,close,results:()=>results};
 loadMachines().then(renderMachineCards);
 
 // ─── CONVERT TAB ─────────────────────────────────────────────────────────
-const convertInput = setupUpload('uz-convert', 'btn-convert');
+// convertInput already set up above alongside other zones
 
 document.getElementById('btn-convert').addEventListener('click', async () => {
   const btn = document.getElementById('btn-convert');
