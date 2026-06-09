@@ -514,7 +514,7 @@ h1,h2,h3,h4,h5,h6{font-family:'Oswald',sans-serif}
 .toast.info{background:var(--orange)}
 
 /* CONNECTION INDICATOR */
-.conn-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0}
+.conn-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0;background:#aaa}
 .conn-dot.online{background:var(--success);box-shadow:0 0 6px rgba(46,204,113,.5)}
 .conn-dot.offline{background:var(--danger);box-shadow:0 0 6px rgba(231,76,60,.5)}
 .conn-status{display:flex;align-items:center;font-size:11px;color:var(--steel);margin-right:8px}
@@ -635,7 +635,7 @@ body{background:#fff}
 </div>
 </a>
 <div class="nav-links">
-<div class="conn-status" id="conn-status" title="API connection status" role="status" aria-live="polite"><span class="conn-dot offline" id="conn-dot" aria-hidden="true"></span><span id="conn-label">Checking...</span></div>
+<div class="conn-status" id="conn-status" title="API connection status" role="status" aria-live="polite"><span class="conn-dot" id="conn-dot" aria-hidden="true"></span><span id="conn-label">Checking...</span></div>
 <a href="#feature-tabs" class="nav-link" data-tab-link="machines">Machine Profiles</a>
 <a href="training.html" class="nav-link">Training Guide</a>
 <a href="#" class="nav-link" id="btn-api-docs">API Docs</a>
@@ -645,7 +645,7 @@ body{background:#fff}
 </div>
 <!-- Mobile menu -->
 <div class="nav-mobile-menu" id="nav-mobile-menu" role="menu">
-<div class="conn-status" style="display:flex"><span class="conn-dot offline" id="conn-dot-m" aria-hidden="true"></span><span id="conn-label-m">Checking...</span></div>
+<div class="conn-status" style="display:flex"><span class="conn-dot" id="conn-dot-m" aria-hidden="true"></span><span id="conn-label-m">Checking...</span></div>
 <a href="#feature-tabs" role="menuitem" data-tab-link="validate">Validate</a>
 <a href="#feature-tabs" role="menuitem" data-tab-link="clean">Clean</a>
 <a href="#feature-tabs" role="menuitem" data-tab-link="nest">Nest Analyzer</a>
@@ -1260,7 +1260,7 @@ const dots=[document.getElementById('conn-dot'),document.getElementById('conn-do
 const labels=[document.getElementById('conn-label'),document.getElementById('conn-label-m')];
 try{
 const ctrl=new AbortController();
-const timer=setTimeout(()=>ctrl.abort(),3000);
+const timer=setTimeout(()=>ctrl.abort(),10000);
 const r=await fetch(API+'/machines',{method:'GET',signal:ctrl.signal});
 clearTimeout(timer);
 if(r.ok){apiOnline=true;dots.forEach(d=>{if(d)d.className='conn-dot online';});labels.forEach(l=>{if(l)l.textContent='API Online';});}
