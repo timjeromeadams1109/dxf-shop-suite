@@ -9,8 +9,15 @@
     { "src": "api/nest.py", "use": "@vercel/python" },
     { "src": "api/validate.py", "use": "@vercel/python" }
   ],
-  "rewrites": [
-    { "source": "/api/library/add", "destination": "/api/library" },
-    { "source": "/api/library/:id", "destination": "/api/library" }
+  "routes": [
+    { "src": "/api/library/add", "dest": "/api/library.py" },
+    { "src": "/api/library/([^/]+)", "dest": "/api/library.py" },
+    { "src": "/api/clean", "dest": "/api/clean.py" },
+    { "src": "/api/library", "dest": "/api/library.py" },
+    { "src": "/api/machines", "dest": "/api/machines.py" },
+    { "src": "/api/nest", "dest": "/api/nest.py" },
+    { "src": "/api/validate", "dest": "/api/validate.py" },
+    { "src": "/training", "dest": "/training.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
