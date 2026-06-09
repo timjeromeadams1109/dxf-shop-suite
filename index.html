@@ -652,6 +652,8 @@ body{background:#fff}
 <a href="#feature-tabs" role="menuitem" data-tab-link="library">Part Library</a>
 <a href="#feature-tabs" role="menuitem" data-tab-link="create">Create DXF</a>
 <a href="#feature-tabs" role="menuitem" data-tab-link="machines">Machine Profiles</a>
+<a href="#feature-tabs" role="menuitem" data-tab-link="convert">Convert to DXF</a>
+<a href="#feature-tabs" role="menuitem" data-tab-link="connectors">Connectors</a>
 <a href="training.html" role="menuitem">Training Guide</a>
 <a href="#" role="menuitem" id="btn-api-docs-m">API Docs</a>
 </div>
@@ -725,6 +727,8 @@ body{background:#fff}
 <button class="tab-btn" data-tab="library" role="tab" aria-selected="false" aria-controls="panel-library">Part Library</button>
 <button class="tab-btn" data-tab="create" role="tab" aria-selected="false" aria-controls="panel-create">Create DXF</button>
 <button class="tab-btn" data-tab="machines" role="tab" aria-selected="false" aria-controls="panel-machines">Machine Profiles</button>
+<button class="tab-btn" data-tab="convert" role="tab" aria-selected="false" aria-controls="panel-convert">Convert to DXF</button>
+<button class="tab-btn" data-tab="connectors" role="tab" aria-selected="false" aria-controls="panel-connectors">Connectors</button>
 </div>
 <div class="tab-content">
 
@@ -994,6 +998,39 @@ body{background:#fff}
 </div>
 </div>
 
+<!-- CONVERT TAB -->
+<div class="tab-panel" id="panel-convert" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">⇄</span><span><strong>Convert any drawing file to DXF.</strong> Upload a STEP, SVG, image, spreadsheet, Word doc, or other file and we'll convert it — or give you exact export steps for formats that need a CAD program.</span></div>
+<div class="two-col">
+<div>
+<div class="upload-zone" id="uz-convert">
+<div class="uz-icon">⇄</div>
+<div class="uz-title">Drop Any Drawing File Here</div>
+<div class="uz-sub">SVG · PNG · JPG · BMP · TXT · CSV · XLSX · DOCX</div>
+<div class="uz-sub" style="margin-top:4px;font-size:11px;color:var(--steel)">Guided export: DWG · STEP · F3D · FD3 · SolidWorks · PDF</div>
+<div class="uz-file"></div>
+<input type="file" accept=".svg,.png,.jpg,.jpeg,.bmp,.txt,.csv,.xlsx,.xls,.docx,.doc,.dwg,.step,.stp,.f3d,.fd3,.sldprt,.sldasm,.pdf,.dxf" hidden>
+</div>
+<button class="btn btn-primary btn-full" id="btn-convert" disabled><span class="spinner"></span>Convert to DXF</button>
+</div>
+<div id="results-convert">
+<div class="empty-state"><div class="es-icon">⇄</div><div class="es-text">Upload a file to convert it — results appear here</div></div>
+</div>
+</div>
+</div>
+
+<!-- CONNECTORS TAB -->
+<div class="tab-panel" id="panel-connectors" role="tabpanel">
+<div class="tab-helper"><span class="th-icon">🔩</span><span><strong>Standard structural connector reference.</strong> Browse industry-standard connector specs — joist hangers, angles, post bases, straps, and more. Filter by family or machine, then add directly to your Part Library.</span></div>
+<div class="form-group" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+<select id="conn-family" style="flex:1;min-width:160px"><option value="">All Families</option></select>
+<select id="conn-machine" style="flex:1;min-width:160px"><option value="">All Machines</option></select>
+<input id="conn-search" type="text" placeholder="Search by code or description..." style="flex:2;min-width:200px;padding:10px 14px;border:1px solid #E8DDD4;border-radius:8px;font-family:inherit;font-size:14px">
+</div>
+<div id="conn-count" style="font-size:13px;color:var(--steel);margin-bottom:12px"></div>
+<div id="conn-table"></div>
+</div>
+
 </div>
 </section>
 
@@ -1044,7 +1081,7 @@ body{background:#fff}
 </div>
 <div class="footer-col">
 <h5>Tools</h5>
-<a href="#feature-tabs" data-tab-link="validate">Validate</a><a href="#feature-tabs" data-tab-link="clean">Clean</a><a href="#feature-tabs" data-tab-link="nest">Nest Analyzer</a><a href="#feature-tabs" data-tab-link="library">Part Library</a><a href="#feature-tabs" data-tab-link="create">Create DXF</a><a href="#feature-tabs" data-tab-link="machines">Machine Profiles</a>
+<a href="#feature-tabs" data-tab-link="validate">Validate</a><a href="#feature-tabs" data-tab-link="clean">Clean</a><a href="#feature-tabs" data-tab-link="nest">Nest Analyzer</a><a href="#feature-tabs" data-tab-link="library">Part Library</a><a href="#feature-tabs" data-tab-link="create">Create DXF</a><a href="#feature-tabs" data-tab-link="convert">Convert to DXF</a><a href="#feature-tabs" data-tab-link="connectors">Connectors</a><a href="#feature-tabs" data-tab-link="machines">Machine Profiles</a>
 </div>
 <div class="footer-col">
 <h5>Machines</h5>
@@ -2819,6 +2856,138 @@ return{run,open,close,results:()=>results};
 
 // INIT
 loadMachines().then(renderMachineCards);
+
+// ─── CONVERT TAB ─────────────────────────────────────────────────────────
+const convertInput = setupUpload('uz-convert', 'btn-convert');
+
+document.getElementById('btn-convert').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-convert');
+  const res = document.getElementById('results-convert');
+  if (!convertInput.files[0]) return;
+  setLoading(btn, true);
+  res.innerHTML = '<div class="empty-state"><div class="es-text">Converting...</div></div>';
+  const fd = new FormData();
+  fd.append('file', convertInput.files[0]);
+  try {
+    const r = await fetch(API + '/convert', { method: 'POST', body: fd });
+    const data = await r.json();
+    if (data.status === 'guided_export') {
+      res.innerHTML = `
+        <div class="result-card">
+          <div class="rc-header"><span class="rc-badge warn">Export Required</span><span class="rc-title">${esc(data.format)}</span></div>
+          <div style="margin:12px 0 6px;color:var(--steel);font-size:13px">${esc(data.message||'This format needs a CAD program to export as DXF. Follow these steps:')}</div>
+          <ol style="margin:8px 0 0 20px;padding:0;font-size:14px;line-height:1.8">
+            ${data.instructions.map(s=>`<li>${esc(s)}</li>`).join('')}
+          </ol>
+        </div>`;
+    } else if (data.status === 'converted') {
+      const bytes = atob(data.dxf_b64);
+      const arr = new Uint8Array(bytes.length);
+      for (let i=0;i<bytes.length;i++) arr[i]=bytes.charCodeAt(i);
+      const blob = new Blob([arr], {type:'application/dxf'});
+      const url = URL.createObjectURL(blob);
+      res.innerHTML = `
+        <div class="result-card">
+          <div class="rc-header"><span class="rc-badge ok">Converted</span><span class="rc-title">${esc(data.output_filename)}</span></div>
+          <div class="stat-grid" style="margin:12px 0">
+            <div class="sg-item"><div class="sg-val">${esc(data.original_filename)}</div><div class="sg-lbl">Source File</div></div>
+            <div class="sg-item"><div class="sg-val">${(data.size_bytes/1024).toFixed(1)} KB</div><div class="sg-lbl">Output Size</div></div>
+          </div>
+          <a href="${url}" download="${esc(data.output_filename)}" class="btn btn-primary">Download DXF</a>
+        </div>`;
+      toast('File converted successfully', 'success');
+    } else {
+      showError(res, new Error(data.error || 'Conversion failed'));
+    }
+  } catch(e) { showError(res, e); }
+  finally { setLoading(btn, false); }
+});
+
+// ─── CONNECTORS TAB ──────────────────────────────────────────────────────
+let connectorData = [];
+
+async function loadConnectors() {
+  try {
+    const r = await fetch(API + '/connectors');
+    const data = await r.json();
+    connectorData = data.connectors || [];
+    const famSel = document.getElementById('conn-family');
+    const machSel = document.getElementById('conn-machine');
+    (data.families || []).forEach(f => {
+      const o = document.createElement('option'); o.value = f; o.textContent = f; famSel.appendChild(o);
+    });
+    (data.machines || []).forEach(m => {
+      const o = document.createElement('option'); o.value = m; o.textContent = m.charAt(0).toUpperCase()+m.slice(1); machSel.appendChild(o);
+    });
+    renderConnectors();
+  } catch(e) {
+    document.getElementById('conn-table').innerHTML = '<div class="empty-state"><div class="es-text">Could not load connector data</div></div>';
+  }
+}
+
+function renderConnectors() {
+  const family  = document.getElementById('conn-family').value;
+  const machine = document.getElementById('conn-machine').value;
+  const q       = document.getElementById('conn-search').value.toLowerCase();
+  let list = connectorData;
+  if (family)  list = list.filter(c => c.family === family);
+  if (machine) list = list.filter(c => (c.machines||[]).includes(machine));
+  if (q)       list = list.filter(c => c.code.toLowerCase().includes(q) || c.description.toLowerCase().includes(q));
+  document.getElementById('conn-count').textContent = `${list.length} connector${list.length!==1?'s':''} shown`;
+  if (!list.length) {
+    document.getElementById('conn-table').innerHTML = '<div class="empty-state"><div class="es-text">No connectors match your filters</div></div>';
+    return;
+  }
+  document.getElementById('conn-table').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="border-bottom:2px solid var(--orange);text-align:left">
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">Code</th>
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">Family</th>
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">Description</th>
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">W"</th>
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">H"</th>
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">Ga</th>
+        <th style="padding:8px 10px;font-family:Oswald,sans-serif;font-weight:600">Machines</th>
+        <th style="padding:8px 10px"></th>
+      </tr></thead>
+      <tbody>
+        ${list.map((c,i) => `
+          <tr style="border-bottom:1px solid #EEE8E0;background:${i%2?'#FAF7F4':'#fff'}">
+            <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--orange)">${esc(c.code)}</td>
+            <td style="padding:8px 10px;color:var(--steel)">${esc(c.family)}</td>
+            <td style="padding:8px 10px">${esc(c.description)}</td>
+            <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace">${c.width_in}"</td>
+            <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace">${c.height_in}"</td>
+            <td style="padding:8px 10px;font-family:'JetBrains Mono',monospace">${c.gauge}</td>
+            <td style="padding:8px 10px;color:var(--steel);font-size:12px">${(c.machines||[]).join(', ')}</td>
+            <td style="padding:8px 10px"><button class="btn" style="font-size:11px;padding:4px 10px;background:var(--orange);color:#fff;border:none;border-radius:4px;cursor:pointer" onclick="addConnectorToLibrary(${JSON.stringify(c).replace(/"/g,'&quot;')})">+ Library</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function addConnectorToLibrary(c) {
+  switchTab('library');
+  const nameEl  = document.getElementById('lib-name');
+  const matEl   = document.getElementById('lib-material');
+  const thkEl   = document.getElementById('lib-thickness');
+  const notesEl = document.getElementById('lib-notes');
+  if (nameEl)  nameEl.value  = c.code + ' — ' + c.description;
+  if (matEl)   matEl.value   = c.material || '';
+  if (thkEl)   thkEl.value   = c.gauge ? c.gauge + ' ga' : '';
+  if (notesEl) notesEl.value = `W:${c.width_in}" H:${c.height_in}" D:${c.depth_in}" | ${c.family}`;
+  toast('Connector pre-filled in library form', 'success');
+}
+
+['conn-family','conn-machine'].forEach(id => document.getElementById(id).addEventListener('change', renderConnectors));
+document.getElementById('conn-search').addEventListener('input', renderConnectors);
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  const orig = btn.onclick;
+  btn.addEventListener('click', () => {
+    if (btn.dataset.tab === 'connectors' && connectorData.length === 0) loadConnectors();
+  });
+});
 </script>
 </body>
 </html>

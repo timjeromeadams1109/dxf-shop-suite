@@ -7,7 +7,9 @@
     { "src": "api/library.py", "use": "@vercel/python" },
     { "src": "api/machines.py", "use": "@vercel/python" },
     { "src": "api/nest.py", "use": "@vercel/python" },
-    { "src": "api/validate.py", "use": "@vercel/python" }
+    { "src": "api/validate.py", "use": "@vercel/python" },
+    { "src": "api/convert.py", "use": "@vercel/python" },
+    { "src": "api/connectors.py", "use": "@vercel/python" }
   ],
   "routes": [
     { "src": "/api/library/add", "dest": "/api/library.py" },
@@ -17,6 +19,8 @@
     { "src": "/api/machines", "dest": "/api/machines.py" },
     { "src": "/api/nest", "dest": "/api/nest.py" },
     { "src": "/api/validate", "dest": "/api/validate.py" },
+    { "src": "/api/convert", "dest": "/api/convert.py" },
+    { "src": "/api/connectors", "dest": "/api/connectors.py" },
     { "src": "/training", "dest": "/training.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
