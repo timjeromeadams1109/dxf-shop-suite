@@ -1003,14 +1003,14 @@ body{background:#fff}
 <div class="tab-helper"><span class="th-icon">⇄</span><span><strong>Convert any drawing file to DXF.</strong> Upload a STEP, SVG, image, spreadsheet, Word doc, or other file and we'll convert it — or give you exact export steps for formats that need a CAD program.</span></div>
 <div class="two-col">
 <div>
-<div class="upload-zone" id="uz-convert">
+<label for="convert-file-input" class="upload-zone" id="uz-convert" style="cursor:pointer">
 <div class="uz-icon">⇄</div>
-<div class="uz-title">Drop Any Drawing File Here</div>
+<div class="uz-title">Click or Drop Any Drawing File Here</div>
 <div class="uz-sub">SVG · PNG · JPG · BMP · TXT · CSV · XLSX · DOCX</div>
 <div class="uz-sub" style="margin-top:4px;font-size:11px;color:var(--steel)">Guided export: DWG · STEP · F3D · FD3 · SolidWorks · PDF</div>
-<div class="uz-file"></div>
-<input type="file" accept=".svg,.png,.jpg,.jpeg,.bmp,.txt,.csv,.xlsx,.xls,.docx,.doc,.dwg,.step,.stp,.f3d,.fd3,.sldprt,.sldasm,.pdf,.dxf" hidden>
-</div>
+<div class="uz-file" id="uz-convert-label"></div>
+</label>
+<input type="file" id="convert-file-input" accept="*/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
 <button class="btn btn-primary btn-full" id="btn-convert" disabled><span class="spinner"></span>Convert to DXF</button>
 </div>
 <div id="results-convert">
@@ -1439,8 +1439,29 @@ const valInput=setupUpload('uz-validate','btn-validate');
 const cleanInput=setupUpload('uz-clean','btn-clean');
 const nestInput=setupUpload('uz-nest','btn-nest');
 const libInput=setupUpload('uz-library','btn-library');
-const convertExts=['.svg','.png','.jpg','.jpeg','.bmp','.txt','.csv','.xlsx','.xls','.docx','.doc','.dwg','.step','.stp','.f3d','.fd3','.sldprt','.sldasm','.pdf','.dxf'];
-const convertInput=setupUpload('uz-convert','btn-convert',convertExts);
+// Convert zone — standalone handler (label+input approach for reliability)
+const convertInput=document.getElementById('convert-file-input');
+const convertZone=document.getElementById('uz-convert');
+const convertLabel=document.getElementById('uz-convert-label');
+const convertBtn=document.getElementById('btn-convert');
+convertInput.addEventListener('change',()=>{
+  if(convertInput.files.length>0){
+    convertLabel.textContent=Array.from(convertInput.files).map(f=>f.name).join(', ');
+    convertBtn.disabled=false;
+  }
+});
+convertZone.addEventListener('dragover',e=>{e.preventDefault();convertZone.classList.add('dragover');});
+convertZone.addEventListener('dragleave',()=>convertZone.classList.remove('dragover'));
+convertZone.addEventListener('drop',e=>{
+  e.preventDefault();convertZone.classList.remove('dragover');
+  const files=Array.from(e.dataTransfer.files);
+  if(!files.length)return;
+  const dt=new DataTransfer();
+  files.forEach(f=>dt.items.add(f));
+  convertInput.files=dt.files;
+  convertLabel.textContent=files.map(f=>f.name).join(', ');
+  convertBtn.disabled=false;
+});
 
 function showError(container,err){
 container.innerHTML=`<div class="error-card"><div class="ec-title">⚠ API Error</div><div class="ec-msg">The server encountered an error processing your request.</div><div class="ec-detail">${esc(err.message||String(err))}</div></div>`;
