@@ -1,4 +1,14 @@
 {
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "training.html", "use": "@vercel/static" },
+    { "src": "favicon.svg", "use": "@vercel/static" },
+    { "src": "api/clean.py", "use": "@vercel/python" },
+    { "src": "api/library.py", "use": "@vercel/python" },
+    { "src": "api/machines.py", "use": "@vercel/python" },
+    { "src": "api/nest.py", "use": "@vercel/python" },
+    { "src": "api/validate.py", "use": "@vercel/python" }
+  ],
   "rewrites": [
     { "source": "/api/library/add", "destination": "/api/library" },
     { "source": "/api/library/:id", "destination": "/api/library" }
